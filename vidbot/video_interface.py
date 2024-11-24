@@ -53,6 +53,7 @@ class Videoplayer:
                         # Control frame rate
                         time.sleep(frame_time)
                     
+                    self.current_video = None
                     cap.release()
                     speaker.stop(stream_id)
        

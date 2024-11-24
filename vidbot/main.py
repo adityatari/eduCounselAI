@@ -16,6 +16,8 @@ from langchain.prompts import PromptTemplate
 import configparser
 import requests
 from tts import text_to_speech as tts
+from voice_interface import VoiceInterface
+from video_interface import VideoPlayer
 
 
 # Load config
@@ -74,7 +76,6 @@ class VideoBot:
         """Continuously listen for audio input"""
         while not self.state.should_exit:
             if not self.state.is_listening:
-                # TODO: Implement audio recording
                 audio_data = self.record_audio()
                 self.audio_queue.put(audio_data)
                 self.state.is_listening = True
@@ -115,11 +116,9 @@ class VideoBot:
                 self.state.current_video = self.video_queue.get()
 
             if self.state.current_video is not None:
-                # Play current frame
-                # TODO: Implement proper frame timing
-                cv2.imshow('Video Bot', self.state.current_video)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    self.state.should_exit = True
+                video_player = VideoPlayer()
+                video_player.play(self.state.current_video)
+                
 
 
     def get_llm_response(self, chat_history, user_input):
@@ -173,9 +172,26 @@ class VideoBot:
      
 
     def record_audio(self):
-        """Record audio input"""
-        # TODO: Implement audio recording
-        pass
+        voice_interface = VoiceInterface()
+        print("Starting voice interface... Press Ctrl+C to stop")
+        
+        try:
+            voice_interface.start_recording()
+            self.state.is_listening = True
+            
+            # Continuously check for new audio
+            while not self.state.should_exit:
+                if voice_interface.has_new_audio():
+                    audio_data = voice_interface.get_audio()
+                    if audio_data:
+                        return audio_data
+                time.sleep(0.1)
+                
+        except KeyboardInterrupt:
+            print("\nStopping voice interface...")
+        finally:
+            voice_interface.stop_recording()
+            self.state.is_listening = False
 
 def main():
     bot = VideoBot()
