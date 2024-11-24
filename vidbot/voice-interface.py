@@ -104,28 +104,12 @@ class VoiceInterface:
     def _send_to_stt_api(self, audio_file):
         """Send audio file to Sarvam STT API"""
         try:
-            with open(audio_file, 'rb') as f:
-                audio_content = f.read()
-                
-            api_url = self.config['API']['SARVAM_API_ENDPOINT']
-            headers = {
-                "Authorization": f"Bearer {self.config['API']['SARVAM_API_KEY']}",
-                "Content-Type": "audio/wav"
-            }
-            
-            response = requests.post(api_url, data=audio_content, headers=headers)
-            
-            if response.status_code == 200:
-                transcript = response.json().get('transcript', '')
-                print(f"Transcribed text: {transcript}")
-                return transcript
-            else:
-                print(f"Error in STT API: {response.status_code}")
-                return None
+            import stt
+            transcript = stt.get_transcript(audio_file)
+            return transcript
                 
         except Exception as e:
-            print(f"Error in STT API call: {e}")
-            return None
+            return(f"Error in speech to text API call: {e}")
         
     def stop_recording(self):
         """Stop recording and clean up"""
