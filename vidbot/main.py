@@ -58,11 +58,8 @@ class VideoBot:
                 self.state.is_processing = True
                 
                 # Get audio and process
-                audio_data = self.audio_queue.get()
-                
-                # Speech to text
-                text = self.speech_to_text(audio_data)
-                
+                text = self.audio_queue.get()
+                print(text)
                 # Get LLM response
                 response = self.get_llm_response(text)
                 
@@ -84,7 +81,7 @@ class VideoBot:
             if not self.video_queue.empty():
                 # Get new video
                 self.state.current_video = self.video_queue.get()
-            
+
             if self.state.current_video is not None:
                 # Play current frame
                 # TODO: Implement proper frame timing
