@@ -1,0 +1,6 @@
+[submodule "vibot/SadTalker"]
+	path = vibot/SadTalker
+	url = git@github.com:OpenTalker/SadTalker.git
+[submodule "vidbot/SadTalker"]
+	path = vidbot/SadTalker
+	url = git@github.com:OpenTalker/SadTalker.git
