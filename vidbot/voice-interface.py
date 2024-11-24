@@ -9,9 +9,14 @@ from array import array
 from struct import pack
 import threading
 import os
+import configparser
 
 class VoiceInterface:
     def __init__(self, sample_rate=16000, frame_duration=30):
+        # Load config
+        self.config = configparser.ConfigParser()
+        self.config.read('../../config/config.ini')
+        
         # Audio configurations
         self.sample_rate = sample_rate
         self.frame_duration = frame_duration  # in milliseconds
@@ -97,16 +102,14 @@ class VoiceInterface:
         self._send_to_stt_api(wav_filename)
         
     def _send_to_stt_api(self, audio_file):
-        """Send audio file to STT API (implement your specific API here)"""
-        # Example implementation - replace with your chosen STT API
+        """Send audio file to Sarvam STT API"""
         try:
             with open(audio_file, 'rb') as f:
                 audio_content = f.read()
                 
-            # Replace this with your actual API endpoint and key
-            api_url = "YOUR_STT_API_ENDPOINT"
+            api_url = self.config['API']['SARVAM_API_ENDPOINT']
             headers = {
-                "Authorization": "YOUR_API_KEY",
+                "Authorization": f"Bearer {self.config['API']['SARVAM_API_KEY']}",
                 "Content-Type": "audio/wav"
             }
             
@@ -115,12 +118,14 @@ class VoiceInterface:
             if response.status_code == 200:
                 transcript = response.json().get('transcript', '')
                 print(f"Transcribed text: {transcript}")
-                # Here you can add your own processing of the transcribed text
+                return transcript
             else:
                 print(f"Error in STT API: {response.status_code}")
+                return None
                 
         except Exception as e:
             print(f"Error in STT API call: {e}")
+            return None
         
     def stop_recording(self):
         """Stop recording and clean up"""

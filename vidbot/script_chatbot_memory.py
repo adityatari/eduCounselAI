@@ -7,13 +7,13 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 from transformers import AutoModelForCausalLM, AutoTokenizer,AutoConfig
-
+import torch
 
 
 
 model_name = "meta-llama/Llama-3.2-1B-Instruct"  # Adjust for 1B if you have it
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype="auto")
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype=torch.float16)
 
 
 # Function to search programs in SQLite using FAISS
